@@ -4,7 +4,7 @@ from kafka import KafkaProducer
 
 
 # Set up a Kafka producer
-producer = KafkaProducer(bootstrap_servers=['192.168.1.252:9092'])
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 
 # Set the topic to publish the video stream data to
 topic = 'webcam-video-stream'
@@ -27,7 +27,7 @@ while True:
     elapsed_time_since_sent = time.time() - last_sent_time
     
     # Check if at least 2 seconds have passed since last sent frame
-    if elapsed_time_since_sent >= 2:
+    if elapsed_time_since_sent >= 1/12:
         # Encode the frame as a JPEG image
         ret, buffer = cv2.imencode('.jpg', frame)
 
