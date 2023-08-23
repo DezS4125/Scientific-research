@@ -1,11 +1,12 @@
 import cv2
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
+from CONSTANT import KAFKA_TOPIC,BOOTSTRAP_SERVERS
 
 # logging.basicConfig(level=logging.DEBUG)
 
 # Set up the Kafka producer
-producer = KafkaProducer(bootstrap_servers=['192.168.81.25:9092'])
+producer = KafkaProducer(bootstrap_servers=[BOOTSTRAP_SERVERS])
 
 # Set up the video capture
 cap = cv2.VideoCapture("/home/ubuntu/codes/kafka/2023-08-17 11-47-34.mkv")
@@ -18,14 +19,8 @@ while True:
     ret, jpeg = cv2.imencode('.jpg', frame)
 
     # Send the encoded frame to the Kafka topic
-    future = producer.send('video-stream-1', jpeg.tobytes())
+    future = producer.send(KAFKA_TOPIC, jpeg.tobytes())
     print("Message sent!")
-    # cv2.imshow('frame', frame)
-
-    # # Exit the loop when 'q' key is pressed
-    # if cv2.waitKey(1) & 0xFF == ord('q'):
-    #     break
-    # Handle any errors that may occur
     try:
         record_metadata = future.get(timeout=10)
     except KafkaError as e:
