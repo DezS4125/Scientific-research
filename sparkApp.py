@@ -2,7 +2,10 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 import cv2
 import numpy as np
-from CONSTANT import APP_NAME,KAFKA_TOPIC,BOOTSTRAP_SERVERS
+from CONSTANT import APP_NAME,KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS,KAFKA_TOPIC_OUTPUT
+from kafka import KafkaProducer
+
+producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
 spark = SparkSession \
     .builder \
@@ -14,7 +17,7 @@ df = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS) \
-    .option("subscribe", KAFKA_TOPIC) \
+    .option("subscribe", KAFKA_TOPIC_INPUT) \
     .load()
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
@@ -30,7 +33,9 @@ def process(row):
     
     # Display the frame in the window
     print("image received")
-    cv2.imwrite(filename, image)
+    
+    # Publish the image data to a Kafka topic
+    producer.send(KAFKA_TOPIC_OUTPUT, key=row['key'], value=image)
 
 query = df \
     .writeStream \

@@ -1,4 +1,5 @@
 APP_NAME = "Facial Analytic"
-KAFKA_TOPIC = "video-stream-1"
+KAFKA_TOPIC_INPUT = "input-1"
 BOOTSTRAP_SERVERS = "192.168.81.25:9092"
 SPARK_MASTER = "spark://192.168.81.106:7077"
+KAFKA_TOPIC_OUTPUT = "result-1"

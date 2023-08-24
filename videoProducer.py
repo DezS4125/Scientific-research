@@ -1,7 +1,7 @@
 import cv2
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
-from CONSTANT import KAFKA_TOPIC,BOOTSTRAP_SERVERS
+from CONSTANT import KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -19,7 +19,7 @@ while True:
     ret, jpeg = cv2.imencode('.jpg', frame)
 
     # Send the encoded frame to the Kafka topic
-    future = producer.send(KAFKA_TOPIC, jpeg.tobytes())
+    future = producer.send(KAFKA_TOPIC_INPUT, jpeg.tobytes())
     print("Message sent!")
     try:
         record_metadata = future.get(timeout=10)
