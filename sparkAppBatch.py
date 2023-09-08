@@ -5,18 +5,19 @@ import io
 import cv2
 import numpy as np
 # import processing.janyDetection as jany
+from CONSTANT import APP_NAME,KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS
 
 spark = SparkSession \
     .builder \
-    .appName("Facial Analytic") \
+    .appName(APP_NAME) \
     .getOrCreate()
     
 # Subscribe to 1 topic
 df = spark \
     .readStream \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", "192.168.81.25:9092") \
-    .option("subscribe", "video-stream-1") \
+    .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS) \
+    .option("subscribe", KAFKA_TOPIC_INPUT) \
     .load()
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
