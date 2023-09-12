@@ -2,7 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 import cv2
 import numpy as np
-from CONSTANT import APP_NAME,KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS,KAFKA_TOPIC_OUTPUT
+from CONSTANT import APP_NAME,KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS,KAFKA_TOPIC_OUTPUT,BOOTSTRAP_SERVERS_FOR_SPARK
 
 spark = SparkSession \
     .builder \
@@ -13,7 +13,7 @@ spark = SparkSession \
 df = spark \
     .readStream \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS) \
+    .option("kafka.bootstrap.servers", "192.168.81.25:9091,192.168.81.90:9093,192.168.81.197:9094") \
     .option("subscribe", KAFKA_TOPIC_INPUT) \
     .load()
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
@@ -39,13 +39,13 @@ def process(batchDF, batchId):
         image_df = spark.createDataFrame([(image_bytes,)], ["value"])
         
         # Write the processed image to a Kafka topic
-        image_df \
-            .selectExpr("CAST(value AS STRING)") \
-            .write \
-            .format("kafka") \
-            .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS) \
-            .option("topic", KAFKA_TOPIC_OUTPUT) \
-            .save()
+        # image_df \
+        #     .selectExpr("CAST(value AS STRING)") \
+        #     .write \
+        #     .format("kafka") \
+        #     .option("kafka.bootstrap.servers", "192.168.81.25:9091,192.168.81.90:9093,192.168.81.197:9094") \
+        #     .option("topic", KAFKA_TOPIC_OUTPUT) \
+        #     .save()
 
 
 query = df \

@@ -6,7 +6,7 @@ from CONSTANT import KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS
 # logging.basicConfig(level=logging.DEBUG)
 
 # Set up the Kafka producer
-producer = KafkaProducer(bootstrap_servers=[BOOTSTRAP_SERVERS])
+producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
 # Set up the video capture
 cap = cv2.VideoCapture("/home/ubuntu/codes/kafka/2023-08-17 11-47-34.mkv")
