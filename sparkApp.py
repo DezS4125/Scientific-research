@@ -13,7 +13,7 @@ spark = SparkSession \
 df = spark \
     .readStream \
     .format("kafka") \
-    .option("kafka.bootstrap.servers", "192.168.81.25:9091,192.168.81.90:9093,192.168.81.197:9094") \
+    .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS_FOR_SPARK) \
     .option("subscribe", KAFKA_TOPIC_INPUT) \
     .load()
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
