@@ -39,13 +39,13 @@ def process(batchDF, batchId):
         image_df = spark.createDataFrame([(image_bytes,)], ["value"])
         
         # Write the processed image to a Kafka topic
-        # image_df \
-        #     .selectExpr("CAST(value AS STRING)") \
-        #     .write \
-        #     .format("kafka") \
-        #     .option("kafka.bootstrap.servers", "192.168.81.25:9091,192.168.81.90:9093,192.168.81.197:9094") \
-        #     .option("topic", KAFKA_TOPIC_OUTPUT) \
-        #     .save()
+        image_df \
+            .selectExpr("CAST(value AS STRING)") \
+            .write \
+            .format("kafka") \
+            .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS_FOR_SPARK) \
+            .option("topic", KAFKA_TOPIC_OUTPUT) \
+            .save()
 
 
 query = df \
