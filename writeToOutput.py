@@ -12,5 +12,5 @@ for message in consumer:
     index = index + 1
     cv2.imwrite("/home/ubuntu/codes/kafka/output/image-" + str(index) + ".jpg", frame)
     # print(message.value)
-    print("Receiver image")
+    print("Received image")
     

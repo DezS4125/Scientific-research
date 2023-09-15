@@ -2,3 +2,8 @@ legacyCode/
 output/
 __pycache__/
 TRained_model/
+model/__pycache__/
+model/cluster2_vgg_official.h5
+model/local_vit_500.h5
+model/yolov8n-face.pt
+model/bus.jpg

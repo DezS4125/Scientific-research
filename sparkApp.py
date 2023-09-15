@@ -3,8 +3,10 @@ from pyspark.sql.functions import *
 import cv2
 import numpy as np
 from CONSTANT import APP_NAME,KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS,KAFKA_TOPIC_OUTPUT,BOOTSTRAP_SERVERS_FOR_SPARK
-from TRained_model.DENSE.src.prediction import predict_image
-from tensorflow.keras.models import load_model
+# from TRained_model.DENSE.src.prediction import predict_image
+# from tensorflow.keras.models import load_model
+import model.vit_cam_dect as vit
+import model.camera as ca
 
 
 spark = SparkSession \
@@ -22,10 +24,6 @@ df = spark \
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
 
-# Load the trained model
-model_path = "/home/ubuntu/codes/kafka/prod/TRained_model/DENSE/model/output_model/cluster/model2_224x224/cluster_densenet_224x224.h5"
-model = load_model(model_path)
-
 def process(batchDF, batchId):
     images = batchDF.select("value").rdd.map(lambda x: x["value"]).collect()
     for i, image in enumerate(images):
@@ -34,12 +32,18 @@ def process(batchDF, batchId):
         
         # Decode the image data using OpenCV
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        
-        # Process the image as needed
-        index,prob=predict_image(model, image)
-        print("index="+index+"; prob="+prob)
-        # Encode the processed image as a JPEG
-        # ret, buf = cv2.imencode(".jpg", image)
+        # _, image = cv2.imdecode(".png", nparr)
+        print(image)
+        # process image
+        prediction, resultFrame=ca.predict(image,vit.model)
+        print(prediction)
+        print(resultFrame)
+        print("-------")
+        ret, buf = cv2.imencode(".jpg", resultFrame)
+        cv2.waitKey(0)
+
+        # # Encode the processed image as a JPEG
+        # ret, buf = cv2.imencode(".jpg", resultFrame)
         # image_bytes = buf.tobytes()
         
         # # Create a DataFrame with the processed image data

@@ -2,6 +2,7 @@ import cv2
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 from CONSTANT import KAFKA_TOPIC_INPUT,BOOTSTRAP_SERVERS
+import preprocessing.detectFaceYolov8 as det
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -14,13 +15,17 @@ cap = cv2.VideoCapture("/home/ubuntu/codes/kafka/2023-08-17 11-47-34.mkv")
 while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
-
+    
+    print("####################")
+    frame=det.processOneFaceInFrame(frame)
+    print(frame)
     # Encode the frame as a JPEG image
     ret, jpeg = cv2.imencode('.jpg', frame)
 
     # Send the encoded frame to the Kafka topic
     future = producer.send(KAFKA_TOPIC_INPUT, jpeg.tobytes())
     print("Message sent!")
+    
     try:
         record_metadata = future.get(timeout=10)
     except KafkaError as e:
