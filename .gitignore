@@ -7,3 +7,5 @@ model/cluster2_vgg_official.h5
 model/local_vit_500.h5
 model/yolov8n-face.pt
 model/bus.jpg
+preprocessing/yolov8n-face.pt
+test.py

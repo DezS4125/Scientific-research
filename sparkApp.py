@@ -29,19 +29,17 @@ def process(batchDF, batchId):
     for i, image in enumerate(images):
         # Convert the image data to a NumPy array
         nparr = np.frombuffer(image, np.uint8)
-        
+
         # Decode the image data using OpenCV
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        # _, image = cv2.imdecode(".png", nparr)
-        print(image)
-        # process image
-        prediction, resultFrame=ca.predict(image,vit.model)
-        print(prediction)
-        print(resultFrame)
-        print("-------")
-        ret, buf = cv2.imencode(".jpg", resultFrame)
-        cv2.waitKey(0)
 
+        prediction, resultFrame=ca.predict(image,vit.model)
+        
+        print(prediction)
+
+        
+
+        # ->>The following piece of code is for testing only
         # # Encode the processed image as a JPEG
         # ret, buf = cv2.imencode(".jpg", resultFrame)
         # image_bytes = buf.tobytes()

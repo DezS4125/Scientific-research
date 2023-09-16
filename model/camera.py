@@ -10,6 +10,7 @@ GREEN = (0, 255, 0)
 
 def preprocess(image):
     image = cv2.resize(image, (224, 224))
+    print("0------0")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     # cv2.imshow("Face", image)
     # image = np.array(image)
@@ -18,15 +19,16 @@ def preprocess(image):
 
 def predict(face,model):
     face = preprocess(face)
-    print(face.shape)
+    # print(face.shape)
     result = model.predict(face)
     index = np.argmax(result)
     label = ["DROWSY", "NON DROWSY"]	
     label = label[index]
-    # if index == 0:
-    #     cv2.putText(face, label, (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2, RED, 2)
-    # else:
-    #     cv2.putText(face, label, (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2, GREEN, 2)
+    face = np.squeeze(face, axis=0)
+    if index == 0:
+        cv2.putText(face, label, (10,30), cv2.FONT_HERSHEY_SIMPLEX, 2, RED, 2)
+    else:
+        cv2.putText(face, label, (10,30), cv2.FONT_HERSHEY_SIMPLEX, 2, GREEN, 2)
     print(label)
     return index, face
 

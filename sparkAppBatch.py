@@ -26,13 +26,16 @@ def process(batchDF, batchId):
         filename = f"/home/ubuntu/codes/kafka/prod/output/image-{batchId}-{i}.png"
         # Convert the image data to a NumPy array
         nparr = np.frombuffer(image, np.uint8)
-        
+        print("jpeg:")
+        print(nparr)
         # Decode the image data using OpenCV
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        #image=cv2.imshow(image)
+        print(image)
+        print(image.shape)
+        # image=cv2.imshow(image)
         # Display the frame in the window
         print("image received")
-        cv2.imwrite(filename, image)
+        # cv2.imwrite(filename, image)
 
         # Check if the user pressed the 'q' key
         # if cv2.waitKey(1) & 0xFF == ord('q'):

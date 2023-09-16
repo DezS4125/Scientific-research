@@ -16,12 +16,16 @@ while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
     
+    print(type(frame))
+    print(frame.shape)
+    print(frame)
     print("####################")
     frame=det.processOneFaceInFrame(frame)
-    print(frame)
+
+    # print(type(frame))
+    print(frame.shape)
     # Encode the frame as a JPEG image
     ret, jpeg = cv2.imencode('.jpg', frame)
-
     # Send the encoded frame to the Kafka topic
     future = producer.send(KAFKA_TOPIC_INPUT, jpeg.tobytes())
     print("Message sent!")
@@ -33,6 +37,7 @@ while True:
         print ("Message sent failed")
         print (f"Error: {e}")
         pass
+    # cap.release()
 
 # Release the video capture when done
 cap.release()
