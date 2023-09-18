@@ -6,9 +6,9 @@ window = []
 for message in consumer:
     value = int(message.value.decode())
     window.append(value)
+    print(window)
+    print(str(window.count(0)) + "," + str(0.7 * len(window)))
     if len(window) > 12:
         window.pop(0)
-        print(window)
-        print(sum(window))
-    if sum(window) > 12*DROWSY_CONFIRM_PERCENTAGE:
-        print("DROWSYYYYY!!!!!!!!!")
+        if window.count(0) > 0.7 * len(window):
+            print("DROWSYYYYY!!!!!!!!!")

@@ -16,14 +16,9 @@ while True:
     # Capture frame-by-frame
     ret, frame = cap.read()
     
-    print(type(frame))
-    print(frame.shape)
-    print(frame)
     print("####################")
     frame=det.processOneFaceInFrame(frame)
 
-    # print(type(frame))
-    print(frame.shape)
     # Encode the frame as a JPEG image
     ret, jpeg = cv2.imencode('.jpg', frame)
     # Send the encoded frame to the Kafka topic
