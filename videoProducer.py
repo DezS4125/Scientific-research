@@ -17,7 +17,7 @@ while True:
     ret, frame = cap.read()
     
     print("####################")
-    frame=det.processOneFaceInFrame(frame)
+    # frame=det.processOneFaceInFrame(frame)
 
     # Encode the frame as a JPEG image
     ret, jpeg = cv2.imencode('.jpg', frame)

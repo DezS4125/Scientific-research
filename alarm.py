@@ -11,4 +11,4 @@ for message in consumer:
     if len(window) > 12:
         window.pop(0)
         if window.count(0) > 0.7 * len(window):
-            print("DROWSYYYYY!!!!!!!!!")
+            print("DROWSYYYY!!!!!!!!!")
