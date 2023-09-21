@@ -52,7 +52,7 @@ class PatchEncoder(layers.Layer):
 
 #################################
 
-vit_local = "/home/ubuntu/codes/kafka/prod/model/local_vit_500.h5"
+vit_local = "local_vit_500.h5"
 
 
 

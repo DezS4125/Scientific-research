@@ -10,7 +10,7 @@ import preprocessing.detectFaceYolov8 as det
 producer = KafkaProducer(bootstrap_servers=BOOTSTRAP_SERVERS)
 
 # Set up the video capture
-cap = cv2.VideoCapture("/home/ubuntu/codes/kafka/2023-08-17 11-47-34.mkv")
+cap = cv2.VideoCapture(0)
 
 while True:
     # Capture frame-by-frame
