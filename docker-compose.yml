@@ -1,0 +1,248 @@
+version: "3.3"
+services:
+  spark-master:
+    image: cluster-apache-spark:3.4.2
+    ports:
+      - "9190:8080"
+      - "7077:7077"
+    networks:
+      - kafka
+    environment:
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+  spark-worker-a:
+    image: cluster-apache-spark:3.4.2
+    ports:
+      - "9191:8080"
+      - "7000:7000"
+    networks:
+      - kafka
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=6
+      - SPARK_WORKER_MEMORY=8G
+      - SPARK_DRIVER_MEMORY=8G
+      - SPARK_EXECUTOR_MEMORY=4G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-a
+  spark-worker-b:
+    image: cluster-apache-spark:3.4.2
+    ports:
+      - "9192:8080"
+      - "7001:7000"
+    networks:
+      - kafka
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=6
+      - SPARK_WORKER_MEMORY=8G
+      - SPARK_DRIVER_MEMORY=8G
+      - SPARK_EXECUTOR_MEMORY=4G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-b
+  
+  zookeeper:
+    platform: linux/amd64
+    image: confluentinc/cp-zookeeper:6.1.0
+    container_name: zookeeper
+    restart: unless-stopped
+    ports:
+      - '32181:32181'
+      - '2888:2888'
+      - '3888:3888'
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper:2888:3888
+    healthcheck:
+      test: echo stat | nc localhost 32181
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - kafka
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  broker-1:
+    platform: linux/amd64
+    image: confluentinc/cp-server:6.1.0
+    container_name: broker-1
+    restart: unless-stopped
+    ports:
+      - '9091:9091'
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker-1:29091,EXTERNAL://localhost:9091
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_JMX_PORT: 19101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker-1:29091
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: "true"
+      CONFLUENT_SUPPORT_CUSTOMER_ID: "anonymous"
+    healthcheck:
+      test: nc -vz localhost 9091
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - kafka
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  broker-2:
+    platform: linux/amd64
+    image: confluentinc/cp-server:6.1.0
+    container_name: broker-2
+    restart: unless-stopped
+    ports:
+      - '9092:9092'
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker-2:29092,EXTERNAL://localhost:9092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_JMX_PORT: 19102
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker-2:29092
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: "true"
+      CONFLUENT_SUPPORT_CUSTOMER_ID: "anonymous"
+
+    healthcheck:
+      test: nc -vz localhost 9092
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - kafka
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  broker-3:
+    platform: linux/amd64
+    image: confluentinc/cp-server:6.1.0
+    container_name: broker-3
+    restart: unless-stopped
+    ports:
+      - '9093:9093'
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker-3:29093,EXTERNAL://localhost:9093
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_JMX_PORT: 19103
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker-3:29093
+      CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      CONFLUENT_METRICS_ENABLE: "true"
+      CONFLUENT_SUPPORT_CUSTOMER_ID: "anonymous"
+    healthcheck:
+      test: nc -vz localhost 9093
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - kafka
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:6.1.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "broker-1:29091,broker-2:29092,broker-3:29093"
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    networks:
+      - kafka
+
+  control-center:
+    image: confluentinc/cp-enterprise-control-center:6.1.0
+    hostname: control-center
+    container_name: control-center
+    depends_on:
+      - broker-1
+      - broker-2
+      - broker-3
+      - schema-registry
+    ports:
+      - "9021:9021"
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "broker-1:29091,broker-2:29092,broker-3:29093"
+      CONTROL_CENTER_CONNECT_CLUSTER: "connect:8083"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      PORT: 9021
+    networks:
+      - kafka
+networks:
+  kafka:
+    name: kafka
+

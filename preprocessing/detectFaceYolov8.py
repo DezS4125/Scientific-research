@@ -6,7 +6,7 @@ import os
 #Return a list of bounding box of faces
 def detectFace(frame):
     # Load a model
-    model = YOLO("/home/ubuntu/codes/kafka/prod/preprocessing/yolov8n-face.pt") # load a pretrained model (recommended for training)
+    model = YOLO("/home/dezs/projects/Scientific-research/preprocessing/yolov8n-face.pt") # load a pretrained model (recommended for training)
 
     # Use the model
     results = model(frame) # predict on an image

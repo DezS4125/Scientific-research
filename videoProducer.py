@@ -17,22 +17,27 @@ while True:
     ret, frame = cap.read()
     
     print("####################")
+    # cv2.imshow('Producer',frame)
     # frame=det.processOneFaceInFrame(frame)
 
     # Encode the frame as a JPEG image
-    ret, jpeg = cv2.imencode('.jpg', frame)
-    # Send the encoded frame to the Kafka topic
-    future = producer.send(KAFKA_TOPIC_INPUT, jpeg.tobytes())
-    print("Message sent!")
+    # ret, jpeg = cv2.imencode('.jpg', frame)
+    # # Send the encoded frame to the Kafka topic
+    # future = producer.send(KAFKA_TOPIC_INPUT, jpeg.tobytes())
+    # print("Message sent!")
     
-    try:
-        record_metadata = future.get(timeout=10)
-    except KafkaError as e:
-        # Decide what to do if produce request failed...
-        print ("Message sent failed")
-        print (f"Error: {e}")
-        pass
-    # cap.release()
+    # try:
+    #     record_metadata = future.get(timeout=10)
+    # except KafkaError as e:
+    #     # Decide what to do if produce request failed...
+    #     print ("Message sent failed")
+    #     print (f"Error: {e}")
+    #     pass
+    # # cap.release()
+    cv2.imshow('Producer', frame)
 
+    # Exit the loop when 'q' key is pressed
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 # Release the video capture when done
 cap.release()
