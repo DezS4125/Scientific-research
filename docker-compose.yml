@@ -5,8 +5,8 @@ services:
     ports:
       - "9190:8080"
       - "7077:7077"
-    networks:
-      - kafka
+    volumes:
+      - /home/dezs/projects/Scientific-research:/app
     environment:
       - SPARK_LOCAL_IP=spark-master
       - SPARK_WORKLOAD=master
@@ -15,8 +15,6 @@ services:
     ports:
       - "9191:8080"
       - "7000:7000"
-    networks:
-      - kafka
     depends_on:
       - spark-master
     environment:
@@ -32,8 +30,6 @@ services:
     ports:
       - "9192:8080"
       - "7001:7000"
-    networks:
-      - kafka
     depends_on:
       - spark-master
     environment:

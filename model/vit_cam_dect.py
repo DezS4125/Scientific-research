@@ -52,7 +52,7 @@ class PatchEncoder(layers.Layer):
 
 #################################
 
-vit_local = "/home/dezs/projects/Scientific-research/model/local_vit_500.h5"
+vit_local = "model/local_vit_500.h5"
 
 
 

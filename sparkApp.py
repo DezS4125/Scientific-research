@@ -22,7 +22,7 @@ df = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", BOOTSTRAP_SERVERS_FOR_SPARK) \
-    .option("subscribe", "input-1") \
+    .option("subscribe", KAFKA_TOPIC_INPUT) \
     .load()
 df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
@@ -49,11 +49,11 @@ def process(batchDF, batchId):
         producer.send(KAFKA_TOPIC_OUTPUT, message)
 
 
-        cv2.imshow('frame', image)
+        # cv2.imshow('frame', image)
 
-        # Exit the loop when 'q' key is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        # # Exit the loop when 'q' key is pressed
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
         
 
 
